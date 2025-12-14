@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.platform.testTag
 
 
 
@@ -20,6 +21,7 @@ fun Hint_TextField(
     text: String,
     hint: String,
     modifier: Modifier = Modifier,
+    testTag: String? = null,
     isHintVisible: Boolean = true,
     onValueChange: (String) -> Unit,
     textStyle: TextStyle = TextStyle(),
@@ -39,6 +41,10 @@ fun Hint_TextField(
             ),
             modifier = Modifier
                 .fillMaxWidth()
+                .then(
+                    if (testTag != null) Modifier.testTag(testTag)
+                    else Modifier
+                )
                 .onFocusChanged {
                     onFocusChange(it)
                 }

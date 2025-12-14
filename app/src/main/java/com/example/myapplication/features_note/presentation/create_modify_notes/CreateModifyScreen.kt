@@ -81,17 +81,23 @@ fun CreateModifyScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
+                modifier = Modifier.testTag("SaveNoteButton"), // Espresso
                 onClick = { viewModel.onEvent(CreateModifyEvent.SaveNote) },
                 containerColor = Color(0xFF8BAE66)
             ) {
-                Icon(imageVector = Icons.Default.Done, contentDescription = "Save note")
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = "Save note"
+                )
             }
         }
-    ) {
+    ) { paddingValues ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(noteBackgroundAnimatable.value)
+                .padding(paddingValues)
                 .padding(16.dp)
         ) {
             Row(
@@ -101,10 +107,11 @@ fun CreateModifyScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Note.noteColors.forEach { color ->
+                    val index = Note.noteColors.indexOf(color)
                     val colorInt = color.toArgb()
                     Box(
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(50.dp).testTag("ColorOption_$index")
                             .shadow(15.dp, CircleShape)
                             .clip(CircleShape)
                             .background(color)
@@ -131,6 +138,7 @@ fun CreateModifyScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Hint_TextField(
+                testTag = "TitleTextField", //related to Espresso
                 text = titleState.text,
                 hint = titleState.hint,
                 onValueChange = {
@@ -145,6 +153,8 @@ fun CreateModifyScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Hint_TextField(
+                modifier = Modifier.fillMaxHeight(),
+                testTag = "ContentTextField",
                 text = contentState.text,
                 hint = contentState.hint,
                 onValueChange = {
@@ -155,7 +165,6 @@ fun CreateModifyScreen(
                 },
                 isHintVisible = contentState.isHintVisible,
                 textStyle = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.fillMaxHeight()
             )
         }
     }
