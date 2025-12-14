@@ -43,6 +43,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.testTag
+import android.content.Intent
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Icon
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.ui.platform.LocalContext
+
 
 
 @Composable
@@ -53,6 +60,9 @@ fun CreateModifyScreen(
 ) {
     val titleState = viewModel.noteTitle.value
     val contentState = viewModel.noteContent.value
+
+    val context = LocalContext.current
+
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -80,17 +90,47 @@ fun CreateModifyScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.testTag("SaveNoteButton"), // Espresso
-                onClick = { viewModel.onEvent(CreateModifyEvent.SaveNote) },
-                containerColor = Color(0xFF8BAE66)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Done,
-                    contentDescription = "Save note"
-                )
+            Row {
+
+                //  Share Button (Implicit Intent)
+                FloatingActionButton(
+                    onClick = {
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(
+                                Intent.EXTRA_TEXT,
+                                "${titleState.text}\n\n${contentState.text}"
+                            )
+                        }
+
+                        context.startActivity(
+                            Intent.createChooser(shareIntent, "Share note via")
+                        )
+                    },
+                    containerColor = Color(0xFF8BAE66)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share note"
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                //  Save Button
+                FloatingActionButton(
+                    modifier = Modifier.testTag("SaveNoteButton"),
+                    onClick = { viewModel.onEvent(CreateModifyEvent.SaveNote) },
+                    containerColor = Color(0xFF8BAE66)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Done,
+                        contentDescription = "Save note"
+                    )
+                }
             }
         }
+
     ) { paddingValues ->
 
         Column(
